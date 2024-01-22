@@ -8,36 +8,37 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 
 # ビームの描画色とサイズ
-beam_color = (0, 255, 0)  # RGB (Green)
-beam_thickness = 5
+# beam_color = (0, 255, 0)
+# beam_thickness = 5
 
 # カメラの起動
 cap = cv2.VideoCapture(1)
 
 while True:
-    # フレームの読み込み
     ret, frame = cap.read()
-
-    # グレースケールに変換
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    # 顔の検出
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=3, minSize=(30, 30))
+    faces = face_cascade.detectMultiScale(gray)
 
     for (x, y, w, h) in faces:
-        # 顔の範囲を切り取り
         roi_gray = gray[y:y + h, x:x + w]
         roi_color = frame[y:y + h, x:x + w]
-
-        # 目の検出
         eyes = eye_cascade.detectMultiScale(roi_gray)
 
         for (ex, ey, ew, eh) in eyes:
-            # 目の中心座標
-            eye_center = (x + ex + ew // 2, y + ey + eh // 2)
-
-            # ビームの描画
-            cv2.line(frame, eye_center, (eye_center[0] + 100, eye_center[1] + 100), beam_color, beam_thickness)
+            eye_center = (x + ex + ew // 2, y + ey + eh // 2)# 目の中心座標
+            #魔法陣を描画
+            cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(255, 255, 0), 2)# 眼の中心座標を描画1
+            cv2.circle(frame, eye_center, 10, (255, 255, 0), 2)# 眼の中心座標を描画2
+            cv2.circle(frame, eye_center, 13, (255, 255, 0), 2)
+            cv2.circle(frame, eye_center, 30, (255, 255, 0), 2)
+            cv2.drawMarker(frame, eye_center, (255, 255, 0), cv2.MARKER_DIAMOND, 75, 4)
+            # 画面の下方向に画面端までビームを描画する
+            cv2.line(frame, eye_center, (eye_center[0], frame.shape[0]), (0, 0, 255), 6)
+            cv2.line(frame, eye_center, (eye_center[0], frame.shape[0]), (235, 245, 255), 4)
+            cv2.line(frame, eye_center, (eye_center[0], frame.shape[0]), (255, 255, 255), 2)
+            # ビームが端に来たら爆発するエフェクトを描画する
+            cv2.circle(frame, (eye_center[0], frame.shape[0]), 20, (0, 0, 255), -1)
+            cv2.circle(frame, (eye_center[0], frame.shape[0]), 40, (0, 0, 255), 2)
 
     # 結果の表示
     cv2.imshow('Face Recognition with Beam', frame)
@@ -49,3 +50,4 @@ while True:
 # カメラの解放
 cap.release()
 cv2.destroyAllWindows()
+
