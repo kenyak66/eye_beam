@@ -18,7 +18,10 @@ class FaceDetection:
     
     def draw_eye_circle(self, frame, eye_center):
         self.beam_effects.draw_eye_circle(frame, eye_center)
-
+    
+    def play_sound(self):
+        self.beam_effects.play_sound()
+        
     def run(self):
         while True:
             ret, frame = self.cap.read()
@@ -34,6 +37,7 @@ class FaceDetection:
                     cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (255, 255, 0), 2)
                     self.draw_eye_circle(frame, eye_center)
                     self.draw_beam_effects(frame, eye_center)
+                    self.beam_effects.play_sound()
 
             cv2.imshow('Face Recognition with Beam', frame)
 
@@ -47,3 +51,5 @@ class FaceDetection:
 if __name__ == "__main__":
     face_recognition = FaceDetection(video_source=1)
     face_recognition.run()
+
+#commit message: "Add eye_beam/face_detection.py"
